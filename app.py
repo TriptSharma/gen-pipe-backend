@@ -9,13 +9,13 @@ import base64
 from main import generate_image_from_inference, generate_prompt, HfInferenceAPI
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+CORS(app, resources={r"/api/*": {"origins": "https://gen-pipe-frontend.vercel.app/"}})
 
 @app.route('/api/generate-image', methods=['OPTIONS', 'POST'])
 def generate_image():
     if request.method == 'OPTIONS':
         response = jsonify({'message': 'CORS preflight successful'})
-        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+        response.headers.add('Access-Control-Allow-Origin', 'https://gen-pipe-frontend.vercel.app/')
         response.headers.add('Access-Control-Allow-Methods', 'POST')
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         return response, 200
@@ -38,7 +38,7 @@ def generate_image():
         # # Encode image to base64
         img_base64 = base64.b64encode(img_bytes).decode('utf-8')
         response = jsonify({'image': img_base64})
-        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+        response.headers.add('Access-Control-Allow-Origin', 'https://gen-pipe-frontend.vercel.app/')
         return response, 200
 
     except Exception as e:
