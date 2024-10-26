@@ -1,19 +1,24 @@
 # app.py
 
+import os
+import base64
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import base64
 
 from main import generate_image_from_inference, generate_prompt, HfInferenceAPI
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "https://gen-pipe-frontend.vercel.app/"}})
+allowed_origins = ["http://localhost:3000/", "https://gen-pipe-frontend.vercel.app/"]
+
+CORS(app, resources={r"/api/*": {"origins": allowed_origins}})
 
 @app.route('/api/generate-image', methods=['OPTIONS', 'POST'])
 def generate_image():
+    origin = request.headers.get('Origin')
     if request.method == 'OPTIONS':
         response = jsonify({'message': 'CORS preflight successful'})
-        response.headers.add('Access-Control-Allow-Origin', 'https://gen-pipe-frontend.vercel.app/')
+        if origin in allowed_origins:
+            response.headers.add('Access-Control-Allow-Origin', origin)
         response.headers.add('Access-Control-Allow-Methods', 'POST')
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         return response, 200
@@ -36,7 +41,8 @@ def generate_image():
         # # Encode image to base64
         img_base64 = base64.b64encode(img_bytes).decode('utf-8')
         response = jsonify({'image': img_base64})
-        response.headers.add('Access-Control-Allow-Origin', 'https://gen-pipe-frontend.vercel.app/')
+        if origin in allowed_origins:
+            response.headers.add('Access-Control-Allow-Origin', origin)
         return response, 200
 
     except Exception as e:
@@ -46,6 +52,9 @@ def generate_image():
 def test():
     return jsonify({"success": True, "message": "Test route working"})
 
+@app.route('/')
+def landing_page():
+    return 'Spawned in Arena'
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run()
