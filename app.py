@@ -8,19 +8,22 @@ from flask_cors import CORS
 from main import generate_image_from_inference, generate_prompt, HfInferenceAPI
 
 app = Flask(__name__)
-allowed_origins = ["http://localhost:3000/", "https://gen-pipe-frontend.vercel.app/"]
+allowed_origins = ["http://localhost:3000/", "https://gen-pipe-frontend.vercel.app"]
 
 CORS(app, resources={r"/api/*": {"origins": allowed_origins}})
+
+
+@app.after_request
+def after_request(response):
 
 @app.route('/api/generate-image', methods=['OPTIONS', 'POST'])
 def generate_image():
     origin = request.headers.get('Origin')
     if request.method == 'OPTIONS':
         response = jsonify({'message': 'CORS preflight successful'})
-        if origin in allowed_origins:
-            response.headers.add('Access-Control-Allow-Origin', origin)
-        response.headers.add('Access-Control-Allow-Methods', 'POST')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+        response.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
         return response, 200
 
     data = request.get_json()
