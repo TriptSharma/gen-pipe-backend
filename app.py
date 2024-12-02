@@ -13,10 +13,7 @@ allowed_origins = ["http://localhost:3000/", "https://gen-pipe-frontend.vercel.a
 CORS(app, resources={r"/api/*": {"origins": allowed_origins}})
 
 
-@app.after_request
-def after_request(response):
-
-@app.route('/api/generate-image', methods=['OPTIONS', 'POST'])
+@app.route('https://triptsharma.pythonanywhere.com/api/generate-image', methods=['OPTIONS', 'POST'])
 def generate_image():
     origin = request.headers.get('Origin')
     if request.method == 'OPTIONS':
